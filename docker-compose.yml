@@ -4,6 +4,8 @@ services:
     image: nginx:alpine
     ports:
       - "80:80"
+      - "7400:7400"
+      - "7401:7401"
     volumes:
       - ./www/:/var/www/html/:rw
       - ./conf/conf.d:/etc/nginx/conf.d/:rw
@@ -11,18 +13,14 @@ services:
       - ./log/:/var/log/dnmp/:rw
     restart: always
     networks:
-      - net-php72
+      - net-php71
 
-  php72:
+  php71:
     build:
       context: .
       args:
-        PHP_VERSION: 7.2
-        SOURCE_LIST: jessie
-        XDEBUG_VERSION: 2.6.1
-        SWOOLE_VERSION: 4.2.1
-        SUPPORT_MCRYPT: "false"
-        BUILT_IN_OPCACHE: "true"
+        PHP_VERSION: 7.1
+        SWOOLE_VERSION: 4.3.5
     expose:
       - "9000"
     volumes:
@@ -34,11 +32,11 @@ services:
     cap_add:
       - SYS_PTRACE
     networks:
-      - net-php72
+      - net-php71
     stdin_open: true 
     tty: true
     environment:
       - RUNTIME_ENVIRONMENT=development
 
 networks:
-  net-php72:
+  net-php71:

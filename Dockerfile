@@ -1,11 +1,13 @@
-FROM php:7.2-fpm
+ARG PHP_VERSION
+FROM php:${PHP_VERSION}-fpm
+
+ARG SWOOLE_VERSION
 
 MAINTAINER huangzhhui <h@swoft.org>
 
 # Version
 ENV PHPREDIS_VERSION 4.0.0
 ENV HIREDIS_VERSION 0.13.3
-ENV SWOOLE_VERSION 4.0.3
 
 # Timezone
 RUN /bin/cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
@@ -22,6 +24,8 @@ RUN apt-get update \
         libssl-dev \
         libnghttp2-dev \
         libpcre3-dev \
+        librabbitmq-dev \
+        procps \
     && apt-get clean \
     && apt-get autoremove
 
@@ -33,8 +37,23 @@ RUN curl -sS https://getcomposer.org/installer | php \
 # PDO extension
 RUN docker-php-ext-install pdo_mysql
 
+#sockets extension
+RUN docker-php-ext-install sockets
+
 # Bcmath extension
 RUN docker-php-ext-install bcmath
+
+#amqp extension
+RUN wget http://pecl.php.net/get/amqp-1.9.4.tgz -O /tmp/amqp.tar.tgz \
+    && pecl install /tmp/amqp.tar.tgz \
+    && rm -rf /tmp/amqp.tar.tgz \
+    && docker-php-ext-enable amqp
+
+# grpc extension
+RUN wget http://pecl.php.net/get/grpc-1.21.3.tgz -O /tmp/grpc.tar.tgz \
+    && pecl install /tmp/grpc.tar.tgz \
+    && rm -rf /tmp/grpc.tar.tgz \
+    && docker-php-ext-enable grpc
 
 # Redis extension
 RUN wget http://pecl.php.net/get/redis-${PHPREDIS_VERSION}.tgz -O /tmp/redis.tar.tgz \
