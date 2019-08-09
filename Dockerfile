@@ -44,10 +44,10 @@ RUN docker-php-ext-install sockets
 RUN docker-php-ext-install bcmath
 
 #amqp extension
-RUN wget http://pecl.php.net/get/amqp-1.9.4.tgz -O /tmp/amqp.tar.tgz \
-    && pecl install /tmp/amqp.tar.tgz \
-    && rm -rf /tmp/amqp.tar.tgz \
-    && docker-php-ext-enable amqp
+# RUN wget http://pecl.php.net/get/amqp-1.9.4.tgz -O /tmp/amqp.tar.tgz \
+#    && pecl install /tmp/amqp.tar.tgz \
+#    && rm -rf /tmp/amqp.tar.tgz \
+#    && docker-php-ext-enable amqp
 
 # grpc extension
 RUN wget http://pecl.php.net/get/grpc-1.21.3.tgz -O /tmp/grpc.tar.tgz \
