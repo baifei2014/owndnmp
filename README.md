@@ -28,9 +28,6 @@ DNEP（Docker + Nginx + Elasticsearch + PHP7）是一款全功能的**LNEP一键
 ├── docker-compose.yml   Docker 服务配置示例文件
 └── www                         PHP代码目录
 ```
-结构示意图：
-
-![Demo Image](./dnmp.png)
 
 
 ## 2.快速使用
@@ -39,12 +36,10 @@ DNEP（Docker + Nginx + Elasticsearch + PHP7）是一款全功能的**LNEP一键
     ```
     $ git clone https://github.com/baifei2014/owndnmp
     ```
-3. 拷贝并命名配置文件（Windows系统请用copy命令），启动：
+4. 启动：
     ```
     $ cd dnmp
     $ docker-compose up
-
-    > 注意：Windows安装360安全卫士的同学，请先将其退出，不然安装过程中可能Docker创建账号过程可能被拦截，导致启动时文件共享失败。
 
 5. 访问在浏览器中访问：`http://localhost`，PHP代码：`./www/localhost/index.php`文件。
 
@@ -72,12 +67,28 @@ $ docker-compose down 服务1 服务2 ...       # 停止并删除容器，网络
 $ docker exec -it dnmp_nginx_1 nginx -s reload
 ```
 ### 3.2 安装PHP扩展
-PHP的很多功能都是通过扩展实现，而安装扩展是一个略费时间的过程，
-所以，除PHP内置扩展外，在`env.sample`文件中我们仅默认安装少量扩展，
-如果要安装更多扩展，请打开你的`.env`文件修改如下的PHP配置，
-增加需要的PHP扩展：
+PHP的很多功能都是通过扩展实现，而安装扩展是一个略费时间的过程，默认安装启用少量扩展。如果增加需要的PHP扩展直接修改Dockerfile文件。
+
+启用扩展：
 ```bash
+RUN docker-php-ext-install bcmath
 ```
+
+从外部资源文件编译安装扩展：
+```bash
+RUN wget https://github.com/redis/hiredis/archive/v${HIREDIS_VERSION}.tar.gz -O hiredis.tar.gz \
+    && mkdir -p hiredis \
+    && tar -xf hiredis.tar.gz -C hiredis --strip-components=1 \
+    && rm hiredis.tar.gz \
+    && ( \
+        cd hiredis \
+        && make -j$(nproc) \
+        && make install \
+        && ldconfig \
+    ) \
+    && rm -r hiredis
+```
+
 然后重新build PHP镜像。
     ```bash
     docker-compose build php72
